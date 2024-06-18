@@ -7,24 +7,6 @@ namespace CowsayProgram
     {
         public event EventHandler<string>? Reply;
 
-
-        public void Say(string Message)
-        {
-            Process cowsay = InitCowsay();
-            cowsay.StandardInput.WriteLine(Message);
-            cowsay.StandardInput.Close();
-
-
-            string output = cowsay.StandardOutput.ReadToEnd();
-            OnReply(output);
-            cowsay.WaitForExit();
-        }
-
-        protected virtual void OnReply(string reply)
-        {
-            Reply?.Invoke(this, reply);
-        }
-
         private static Process InitCowsay()
         {
             var cowsay = new Process()
@@ -41,6 +23,26 @@ namespace CowsayProgram
 
             cowsay.Start();
             return cowsay;
+        }
+
+        public void Say(string Message)
+        {
+
+            Process cowsay = InitCowsay();
+            cowsay.StandardInput.WriteLine(Message);
+            cowsay.StandardInput.Close();
+
+
+            string output = cowsay.StandardOutput.ReadToEnd();
+            // string error = cowsay.StandardError.ReadToEnd();
+            cowsay.WaitForExit();
+
+            OnReply(this, output);
+        }
+
+        private void OnReply(object? sender, string reply)
+        {
+            Reply?.Invoke(this, reply);
         }
     }
 }
