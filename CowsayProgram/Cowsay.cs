@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Text;
 
 namespace CowsayProgram
 {
@@ -37,12 +36,11 @@ namespace CowsayProgram
             // string error = cowsay.StandardError.ReadToEnd();
             cowsay.WaitForExit();
 
-            OnReply(this, output);
-        }
-
-        private void OnReply(object? sender, string reply)
-        {
-            Reply?.Invoke(this, reply);
+            EventHandler<string>? raiseEvent = Reply;
+            if (raiseEvent != null)
+            {
+                raiseEvent?.Invoke(this, output);
+            }
         }
     }
 }
