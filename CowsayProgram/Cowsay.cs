@@ -1,52 +1,46 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace Say;
-
-public class Cowsay(string Message)
+namespace CowsayProgram
 {
-    // private string Message { get; } = Message;
-    public StringBuilder sb = new();
-    private event EventHandler<string>? Reply;
-
-
-    public static void Say(string message)
+    public class Cowsay
     {
-        Process cowsay = InitCowsay();
-        cowsay.StandardInput.WriteLine(message);
-        cowsay.StandardInput.Close();
+        public event EventHandler<string>? Reply;
 
 
-        string output = cowsay.StandardOutput.ReadToEnd();
-        Console.WriteLine(output);
-
-        bool exited = cowsay.WaitForExit(0);
-        if (!exited)
+        public void Say(string Message)
         {
-            cowsay.Kill();
+            Process cowsay = InitCowsay();
+            cowsay.StandardInput.WriteLine(Message);
+            cowsay.StandardInput.Close();
+
+
+            string output = cowsay.StandardOutput.ReadToEnd();
+            OnReply(output);
+            cowsay.WaitForExit();
         }
-    }
 
-    public void OnReply()
-    {
-        Console.WriteLine(Message);
-    }
-
-    private static Process InitCowsay()
-    {
-        var cowsay = new Process()
+        protected virtual void OnReply(string reply)
         {
-            StartInfo = new ProcessStartInfo()
-            {
-                FileName = "cowsay",
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            }
-        };
+            Reply?.Invoke(this, reply);
+        }
 
-        cowsay.Start();
-        return cowsay;
+        private static Process InitCowsay()
+        {
+            var cowsay = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = "cowsay",
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                }
+            };
+
+            cowsay.Start();
+            return cowsay;
+        }
     }
 }
