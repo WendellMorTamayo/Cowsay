@@ -6,7 +6,11 @@ string? input = Console.ReadLine();
 if (!string.IsNullOrEmpty(input))
 {
     Cowsay cowsay = new();
-    Subscriber subscriber = new(cowsay);
-
+    cowsay.Reply += OnReply;
     cowsay.Say(input);
+}
+
+static void OnReply(object? sender, string reply)
+{
+    Console.WriteLine(reply);
 }
