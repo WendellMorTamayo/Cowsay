@@ -1,23 +1,38 @@
 using System.Diagnostics;
+using System.Text;
 
 namespace Say;
 
 public class Cowsay(string Message)
 {
-    private string Message { get; } = Message;
-    public event EventHandler<string>? Reply;
+    // private string Message { get; } = Message;
+    public StringBuilder sb = new();
+    private event EventHandler<string>? Reply;
 
-    public static void Say()
+
+    public static void Say(string message)
     {
+        Process cowsay = InitCowsay();
+        cowsay.StandardInput.WriteLine(message);
+        cowsay.StandardInput.Close();
 
+
+        string output = cowsay.StandardOutput.ReadToEnd();
+        Console.WriteLine(output);
+
+        bool exited = cowsay.WaitForExit(0);
+        if (!exited)
+        {
+            cowsay.Kill();
+        }
     }
 
     public void OnReply()
     {
-
+        Console.WriteLine(Message);
     }
 
-    public static void Process(string? Message)
+    private static Process InitCowsay()
     {
         var cowsay = new Process()
         {
@@ -32,15 +47,6 @@ public class Cowsay(string Message)
         };
 
         cowsay.Start();
-        cowsay.StandardInput.WriteLine(Message);
-        cowsay.StandardInput.Close();
-
-        Message = cowsay.StandardOutput.ReadToEnd();
-
-        bool exited = cowsay.WaitForExit(0);
-        if (!exited)
-        {
-            cowsay.Kill();
-        }
+        return cowsay;
     }
 }
