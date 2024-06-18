@@ -6,41 +6,29 @@ namespace CowsayProgram
     {
         public event EventHandler<string>? Reply;
 
-        private static Process InitCowsay()
+        private static Process InitCowsay() => new()
         {
-            var cowsay = new Process()
+            StartInfo = new ProcessStartInfo()
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    FileName = "cowsay",
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                }
-            };
-
-            cowsay.Start();
-            return cowsay;
-        }
+                FileName = "cowsay",
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            }
+        };
 
         public void Say(string message)
         {
-
             Process cowsay = InitCowsay();
+            cowsay.Start();
+            
             cowsay.StandardInput.WriteLine(message);
             cowsay.StandardInput.Close();
 
-
             string output = cowsay.StandardOutput.ReadToEnd();
-            // string error = cowsay.StandardError.ReadToEnd();
             cowsay.WaitForExit();
 
-            EventHandler<string>? raiseEvent = Reply;
-            if (raiseEvent != null)
-            {
-                raiseEvent?.Invoke(this, output);
-            }
+            Reply?.Invoke(this, output);
         }
     }
 }
