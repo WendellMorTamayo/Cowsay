@@ -1,5 +1,6 @@
 ﻿using CowsayProgram;
 
+Console.Clear();
 Console.Write("🐮 Moo! Tell me what you want to say: ");
 string? input = Console.ReadLine();
 
