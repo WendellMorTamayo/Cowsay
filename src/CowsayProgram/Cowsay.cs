@@ -24,11 +24,11 @@ namespace CowsayProgram
             return cowsay;
         }
 
-        public void Say(string Message)
+        public void Say(string message)
         {
 
             Process cowsay = InitCowsay();
-            cowsay.StandardInput.WriteLine(Message);
+            cowsay.StandardInput.WriteLine(message);
             cowsay.StandardInput.Close();
 
 
